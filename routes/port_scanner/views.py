@@ -40,7 +40,8 @@ def scan(request):
         ports = target_ports.split(",")
 
         # Initialize Nmap Scanner
-        nm = nmap.PortScanner()
+        # nm = nmap.PortScanner()
+        nm = nmap.PortScanner(nmap_search_path=['/app/nmap'])
         scan_results = {}
 
         for port in ports:
