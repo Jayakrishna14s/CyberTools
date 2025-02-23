@@ -1,19 +1,23 @@
-const style = document.createElement("style");
-style.innerHTML = `*::-webkit-scrollbar { display: none; }`;
-document.head.appendChild(style);
+document.addEventListener("DOMContentLoaded", () => {
 
-const fontLink = document.createElement("link");
-fontLink.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap";
-fontLink.rel = "stylesheet";
-fontLink.onload = () => {
-    document.body.style.fontFamily = "'Poppins', sans-serif";
-    document.querySelectorAll(".use-poppins").forEach(el => {
-        el.style.fontFamily = "'Poppins', sans-serif";
-    });
+    const style = document.createElement("style");
+    style.innerHTML = `*::-webkit-scrollbar { display: none; }`;
+    document.head.appendChild(style);
+    
+    const fontLink = document.createElement("link");
+    fontLink.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap";
+    fontLink.rel = "stylesheet";
+    fontLink.onload = () => {
+        document.body.style.fontFamily = "'Poppins', sans-serif";
+        document.querySelectorAll(".use-poppins").forEach(el => {
+            el.style.fontFamily = "'Poppins', sans-serif";
+        });
+    
+        console.log("Poppins font applied successfully.");
+    };
+    document.head.appendChild(fontLink);
 
-    console.log("Poppins font applied successfully.");
-};
-document.head.appendChild(fontLink);
+});
 
 
 
