@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTools</title>
+    <script src="{% static 'js/index.global.js' %}"></script>
+
+    <link rel="icon" type="image/x-icon"
+        href="{% static 'images/favicon.ico' %}">
+</head>
+<body class="bg-black text-[#22c55e] border-[2px] border-white  h-[calc(100vh-4px)] w-[calc(100vw-2px)] py-2 px-4 flex flex-col " >
+    <div class="flex justify-center p-4">
+        <div class="relative drop-shadow-[0_0_6px_white]">
+            <img src="{% static 'images/hackerManual.svg' %}" class="h-[250px] " />
+            <!-- <h2 class="absolute top-[20%] right-[20%] bg-black drop-shadow-[0_0_6px_[#22c55e]]  p-1 rounded text-[#22c55e] font-bold rounded-full w-[35px] h-[35px] flex justify-center items-center text-xl p-2">JK</span> -->
+        </div>
+    </div>
+    
+    
+    <ul class="flex-1 overflow-scroll justify-center flex-col items-center">
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+        <li class="flex flex-col items-center z-5"> 
+            <h2 class="font-bold text-xl underline">Information Gathering Tool</h2>
+            <p> <span class="font-bold">Command: </span> gatherinfo < url > </p>
+            <p> <span class="font-bold">example: </span> gatherinfo www.google.com </p>
+        </li>
+
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+
+        <li class="flex flex-col items-center z-5">
+            <h2 class="font-bold text-xl underline">Port Scanner</h2>
+            <p> <span class="font-bold">Command: </span>scanports < ip >  < ports > </p>
+            <p> <span class="font-bold">example: </span> scanports 192.168.0.1 8000,80,143 </p>
+        </li>
+
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+
+        <li class="flex flex-col items-center z-5">
+            <h2 class="font-bold text-xl underline">Subdomain Scanner</h2>
+            <p> <span class="font-bold">Command: </span> scansubdomain < domain > </p>
+            <p> <span class="font-bold">example: </span> scansubdomain google.com </p>
+        </li>
+
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+
+
+        <li class="flex flex-col items-center z-5">
+            <h2 class="font-bold text-xl underline">Phone Scanner</h2>
+            <p> <span class="font-bold">Command: </span> scanphone < phoneNumber > </p>
+            <p> <span class="font-bold">example: </span> scanphone +919776XXXXXX </p>
+        </li>
+
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+
+        <li class="flex flex-col items-center z-5">
+            <h2 class="font-bold text-xl underline">Encryption </h2>
+            <p> <span class="font-bold">Command: </span> genbarcode < 12-digit-number > </p>
+            <p> <span class="font-bold">example: </span> genbarcode 786545345261 </p>
+            <br>
+
+            <p> <span class="font-bold">Command: </span> genqrcode < word > </p>
+            <p> <span class="font-bold">example: </span> genbarcode AttemptAttackAt10AM </p>
+        </li>
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+
+        <li class="flex flex-col items-center z-5">
+            <h2 class="font-bold text-xl underline">Basic Commands </h2>
+            <p> <span class="font-bold">Command: </span> getmyip </p>
+            <br>
+            <p> <span class="font-bold">Command: </span> genpw < size > </p>
+            <p> <span class="font-bold">example: </span> genpw 8 </p>
+            <br>
+            <p> <span class="font-bold">Command: </span> clear </p>
+            <p> <span class="font-bold">Command: </span> cls </p>
+            <br>
+            <p> <span class="font-bold">example: </span> help </p>
+            <p> <span class="font-bold">Command: </span> manual </p>
+            
+        </li>
+        <hr class="border-t-2 border-[#22c55e] my-2 w-full"/>
+
+
+    </ul>
+
+    <br>
+</body>
+</html>

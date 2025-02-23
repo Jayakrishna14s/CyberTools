@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="{% static 'js/index.global.js' %}"></script>
+        <title>CyberTools</title>
+        <!-- <link rel="icon" type="image/svg+xml" href="{% static 'images/CyberSecurity.svg' %}"> -->
+        <link rel="icon" type="image/x-icon"
+            href="{% static 'images/favicon.ico' %}">
+
+        <style>
+            @keyframes wiggle {
+                0%, 25%, 50%, 75%, 100% { transform: translate(0, 0); }
+                12.5% {transform: translate(0, 5px);}
+                37.5% { transform: translate(0px, -5px); }
+                62.5% { transform: translate(0px, 5px); }
+                87.5% { transform: translate(0px, -5px); }
+            }
+        </style>
+
+    </head>
+
+    <body
+        class="h-screen w-full bg-[url('{% static 'images/index.jpg' %}')] bg-cover bg-center bg-no-repeat  ">
+        <div class="flex flex-col h-screen w-full ">
+            <header
+                class="flex-none  flex items-center p-4 px-6 flex justify-between mb-8">
+                <span
+                    class="text-2xl md:text-3xl font-bold use-poppins drop-shadow-lg z-50 bg-gradient-to-r from-black to-blue-900 text-transparent bg-clip-text hover:scale-105 transition duration-1000">
+                    CyberTools
+                </span>
+
+                <a href="/informationGathering"
+                    class="text-md md:text-lg rounded-lg bg-gradient-to-r from-gray-800 to-blue-900 p-2 px-4 text-amber-50 font-lg hover:scale-105 transition duration-1000">
+                    Get started </a>
+
+            </header>
+            <div class="flex-1 overflow-scroll flex flex-col gap-12">
+                <main class="flex items-center flex-col text-center ">
+                    <h1
+                        class="font-semibold text-4xl md:text-6xl  mt-20 drop-shadow-lg z-50 bg-gradient-to-r from-blue-900 to-gray-500 text-transparent bg-clip-text">Explore
+                        tools</h1>
+                    <p
+                        class="w-[80%] text-lg px-6 mt-2 font-semibold drop-shadow-lg text-gray-600">Cyber
+                        Tools enhance security analysis by providing essential
+                        insights and assessments.</p>
+
+                    <ul
+                        class=" flex flex-col md:flex-row w-[80%] justify-between rounded-lg mt-8 gap-4 ">
+                        <li
+                            onclick="window.location.href='/informationGathering'"
+                            class="bg-[#4B556388]  text-amber-50 p-4 rounded-lg shadow-lg w-full md:w-1/3 flex justify-center flex-col items-center hover:scale-102 transition duration-1000">
+                            <h3 class="text-lg font-bold">Information
+                                Gathering</h3>
+                            <p class="text-sm mt-2">Collect critical data for
+                                security analysis and risk assessment.</p>
+                            <img src="{% static 'images/info.svg' %}"
+                                class="w-[150px] my-4 pointer-events-none " />
+                        </li>
+                        <li onclick="window.location.href='/portScanner'"
+                            class="bg-[#4B556388]  text-amber-50 p-4 rounded-lg shadow-lg w-full md:w-1/3 flex justify-center flex-col items-center hover:scale-102 transition duration-1000">
+                            <h3 class="text-lg font-bold">Port Scanner</h3>
+                            <p class="text-sm mt-2">Identify open ports and
+                                analyze network vulnerabilities efficiently.</p>
+                            <img src="{% static 'images/network.svg' %}"
+                                class="w-[150px] my-4 pointer-events-none " />
+                        </li>
+                        <li onclick="window.location.href='/subdomainScanner'"
+                            class="bg-[#4B556388] text-amber-50 p-4 rounded-lg shadow-lg w-full md:w-1/3 flex justify-center flex-col items-center hover:scale-102 transition duration-1000">
+                            <h3 class="text-lg font-bold">Reconnaissance</h3>
+                            <p class="text-sm mt-2">Gather intelligence to
+                                enhance cybersecurity defenses and threat
+                                detection.</p>
+                            <img src="{% static 'images/recon.svg' %}"
+                                class="w-[150px] my-4 pointer-events-none " />
+                        </li>
+                    </ul>
+                </main>
+
+                <footer
+                    class="flex flex-col  flex-1  bg-gradient-to-r from-[#00004099] to-[#00000099] p-20 pb-2">
+                    <span
+                        class="text-amber-50 text-xl font-semibold my-2">CyberTools</span>
+                    <hr class="w-full border-t border-white opacity-50" />
+                    <div class="flex justify-center gap-4 mt-12 mb-8">
+                        <a href="https://www.github.com/Jayakrishna14s"
+                            target="_blank"><img
+                                src="{% static 'images/github.svg' %}"
+                                class="w-[30px]" /></a>
+                        <a href="https://hub.docker.com/u/jayakrishna14"
+                            target="_blank"><img
+                                src="{% static 'images/docker.svg' %}"
+                                class="w-[30px]" /></a>
+                        <a
+                            href="https://www.linkedin.com/in/jayakrishna-paripelli"
+                            target="_blank"><img
+                                src="{% static 'images/linkedin.svg' %}"
+                                class="w-[30px]" /></a>
+                        <a href="https://www.instagram.com/jayakrishna__14"
+                            target="_blank"><img
+                                src="{% static 'images/instagram.svg' %}"
+                                class="w-[30px]" /></a>
+                    </div>
+                    <span class="text-center text-xs text-amber-50 ">&copy; 2025
+                        Cyber Tools. All rights reserved.</span>
+
+                </footer>
+
+                <span
+                    class="fixed bottom-10 right-10 md:bottom-12 md:right-12 rounded-full
+        animate-[wiggle_1.5s_infinite] "
+                    onclick="window.location.href = '/terminal'">
+                    <span
+                        class="relative top-3 -right-[50%] bg-white text-black text-[8px] font-bold p-1 py-0 rounded shadow-md z-6 drop-shadow-[0_0_6px_white] ">
+                        NEW
+                    </span>
+                    <img src="{% static 'images/hacker.svg' %}"
+                        class="bg-gray-500 w-12 h-12 p-2 rounded-full border-1 border-gray-400 drop-shadow-[0_0_6px_white] z-5" />
+                </span>
+            </div>
+        </div>
+
+    </body>
+</html>

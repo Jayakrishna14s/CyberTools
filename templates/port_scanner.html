@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="{% static 'js/index.global.js' %}"></script>
+        <title>CyberTools</title>
+        <!-- <link rel="icon" type="image/svg+xml"
+            href="{% static 'images/CyberSecurity.svg' %}"> -->
+
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+
+    </head>
+
+    <!-- class="h-screen w-full bg-[url('{% static 'images/index.jpg' %}')] bg-cover bg-center bg-no-repeat use-poppins "> -->
+
+    <body
+        class="h-screen w-full bg-gray-900">
+
+        <div class="flex flex-col h-screen w-full  ">
+            <ul
+                class="flex-none  flex items-center  flex justify-between  bg-[#000000cc] text-white font-semibold border-b-2 border-[#ffffffcc] text-xs sm:text-sm">
+                <a href="/informationGathering"
+                    class="w-1/3 text-center p-4 px-6">information
+                    Gathering Tool</a>
+                <a href="/portScanner"
+                    class="w-1/3 text-center  bg-[#ffffffcc] p-4 px-6  text-black  h-full flex items-center justify-center ">
+                    Port Scanner</a>
+                <a href="/subdomainScanner"
+                    class="w-1/3 text-center p-4 px-6">Subdomain Scanner</a>
+
+            </ul>
+            <div
+                class="flex-1 overflow-scroll flex items-center flex-col-reverse gap-12 mt-8 ">
+                <marquee
+                    class="text-white p-2 bg-gradient-to-r from-[#00004099] to-[#00000099] bg-gray-100">A
+                    port scanner is a tool that scans a target host for open
+                    ports to identify active services; use it by providing a
+                    target IP and a list of ports to scan. </marquee>
+
+                    <br>
+                    
+
+                <p id="output"
+                    class="relative w-[80%] h-[400px] bg-black border-2 border-white rounded-lg border-2 border-white overflow-scroll p-8">
+                    <img src="{% static 'images/empty.svg' %}"
+                        class="absolute w-[100px] md:w-[150px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                </p>
+
+                <div
+                    class="relative w-[80%] flex gap-4 justify-between h-14 text-sm">
+                    <input type="text" id="targetHost"
+                        placeholder="Enter target host (e.g., 192.168.1.1)"
+                        class="bg-black text-green-100 rounded text-black font-semibold w-4/9 px-4 border-2 border-white" />
+
+                    <input type="text" id="targetPorts"
+                        placeholder="Enter ports (comma-separated, e.g., 22,80,443)"
+                        class="bg-black text-green-100 rounded text-black font-semibold w-4/9 px-4 border-2 border-white" />
+
+                    <button id="startScan"
+                        class="flex items-center justify-center  ">
+                        <img id="attack" src="{% static 'images/arrow.svg' %}"
+                            class="border-2 border-white bg-black rounded-full hover:bg-blue-700 transition duration-500 w-12 h-12 hover:scale-110 transition duration-500" />
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </body>
+
+    <script>
+        document.getElementById("startScan").addEventListener("click", handleScan);
+        document.getElementById("targetPorts").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("startScan").click();
+            }
+        });
+        document.getElementById("targetHost").addEventListener("keydown", function(event) {
+            if(event.key === "Enter") {
+                document.getElementById("targetPorts").focus();
+            }
+        });
+
+        function handleScan() {
+            let targetHost = document.getElementById("targetHost").value.trim();
+            let targetPorts = document.getElementById("targetPorts").value.trim();
+            targetPorts = targetPorts.replace(" ", "");
+            let outputDiv = document.getElementById("output");
+
+     
+            if (!targetHost) {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Please enter a Host/IP.</p>";
+                return;
+            }
+
+            if (!targetPorts) {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Please enter ports to scan.</p>";
+                return;
+            }
+
+            // Validate host (IP or domain)
+            const hostPattern = /^(?:\d{1,3}\.){3}\d{1,3}$|^(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
+            if (!hostPattern.test(targetHost)) {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Please enter a valid IP or domain.</p>";
+                return;
+            }
+
+            // Validate ports (comma-separated numbers)
+            const portPattern = /^(\d{1,5})(,\d{1,5})*$/;
+            if (!portPattern.test(targetPorts)) {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Enter valid ports (e.g., 22,80,443).</p>";
+                return;
+            }
+
+            outputDiv.innerHTML = "<p class='text-blue-500 text-center mt-8 text-lg font-bold'>Scanning...</p>";
+
+            fetch("/portScanner/scan/", {  // Change URL according to your Django API
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // "X-CSRFToken": getCSRFToken()  // Uncomment if using Django CSRF protection
+                },
+                body: JSON.stringify({ host: targetHost, ports: targetPorts })
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputDiv.innerHTML = `<pre class="text-green-500">${data.result}</pre>`;
+                console.log(data.result);
+                document.getElementById("targetHost").value = "";
+                document.getElementById("targetPorts").value = "";
+            })
+            .catch(error => {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Error processing request.</p>";
+                console.error("Error:", error);
+            });
+        }   
+
+
+    </script>
+</html>

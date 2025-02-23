@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="{% static 'js/index.global.js' %}"></script>
+        <title>CyberTools</title>
+        <!-- <link rel="icon" type="image/svg+xml"
+            href="{% static 'images/CyberSecurity.svg' %}"> -->
+        <link rel="icon" type="image/x-icon"
+            href="{% static 'images/favicon.ico' %}">
+
+    </head>
+    <body
+        class="h-screen w-full bg-gray-900">
+        <div class="flex flex-col h-screen w-full  ">
+            <ul
+                class="flex-none  flex items-center  bg-[#000000cc] text-white font-semibold border-b-2 border-[#ffffffcc] text-xs sm:text-sm">
+                <a href="/informationGathering"
+                    class="w-1/2 text-center  p-4 px-6 ">information
+                    Gathering Tool</a>
+                <a href="/portScanner"
+                    class="w-1/2 text-center p-4 px-6">Port
+                    Scanner</a>
+                <a href="/subdomainScanner"
+                    class="w-1/2 text-center p-4 px-6 bg-[#ffffffcc] text-black h-full flex items-center justify-center">Subdomain
+                    Scanner</a>
+
+            </ul>
+            <div
+                class="flex-1 flex items-center flex-col-reverse gap-8 mt-4 ">
+                <marquee
+                    class="text-white p-2 bg-gradient-to-r from-[#00004099] to-[#00000099] bg-gray-100">
+                    A Subdomain Scanner is a tool used in reconnaissance to find
+                    subdomains of a target domain, helping identify hidden
+                    services and potential security vulnerabilities.</marquee>
+
+                <br>
+                <p id="output"
+                    class="relative w-[80%] h-[400px] rounded-lg border-1 border-white overflow-scroll p-8 bg-black ">
+                    <img src="{% static 'images/empty.svg' %}"
+                        class="absolute w-[100px] md:w-[150px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                </p>
+
+                <div class="relative w-[80%]">
+                    <input type="text" id="targetURL"
+                        placeholder="Enter any target Domain, -  Ex: google.com"
+                        class="bg-[#ffffffcc] w-full p-4 pl-8 pr-16 rounded text-black font-semibold bg-black text-green-100 border-2 border-white " />
+                    <img id="attack" src="{% static 'images/arrow.svg' %}"
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 hover:scale-110 transition duration-500" />
+                </div>
+
+            </div>
+
+        </div>
+    </body>
+
+    <script>
+        document.getElementById("attack").addEventListener("click", handleAttack);
+        document.getElementById("targetURL").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("attack").click();
+            }
+        });
+
+        function handleAttack() {
+            let targetURL = document.getElementById("targetURL").value;
+            let outputDiv = document.getElementById("output");
+
+            if (!targetURL) {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Please enter a URL.</p>";
+                return;
+            }
+
+            // Remove http:// or https:// if present
+            targetURL = targetURL.replace(/^(https?:\/\/)/, "").replace("/", "");
+            targetURL = targetURL.replace("www.", "");
+
+            // Updated regex for better validation
+            // const urlPattern = /^(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(:\d+)?(\/[\w\-./?%&=]*)?\/?$/;
+            const domainPattern = /^(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
+
+
+            if (!domainPattern.test(targetURL)) {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Please enter a valid URL.</p>";
+                return;
+            }   
+
+            outputDiv.innerHTML = "<p class='text-blue-500 text-center mt-8 text-lg font-bold'>Processing...</p>";
+
+            fetch("/subdomainScanner/scan/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ url: targetURL })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.found.length === 0) {
+                    outputDiv.innerHTML = `<p class="text-red-500">No subdomains found.</p>`;
+                } else {
+                    outputDiv.innerHTML = `
+                        <p class="text-green-400 underline mb-4">Discovered Subdomains:</p>
+                        <ul class="list-disc pl-5 text-green-400">
+                            ${data.found.map(subdomain => `<li>${subdomain}</li>`).join("")}
+                        </ul>
+                    `;
+                }
+
+                document.getElementById("targetURL").value = "";
+                console.log("Discovered Subdomains:", data.found);
+            })
+            .catch(error => {
+                outputDiv.innerHTML = "<p class='text-red-500 text-center mt-8 text-lg font-bold'>Error processing request.</p>";
+                console.error("Error:", error);
+            });
+        }
+
+    </script>
+</html>

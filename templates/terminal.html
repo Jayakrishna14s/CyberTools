@@ -1,0 +1,460 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-500 p-0 ">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CyberTools</title>
+        <!-- <link rel="icon" type="image/svg+xml" href="{% static 'images/CyberSecurity.svg' %}"> -->
+        <link rel="icon" type="image/x-icon"
+            href="{% static 'images/favicon.ico' %}">
+
+        <style>
+        * {
+            font-family: monospace;
+            font-weight: 900;
+            color: #22c55e;
+        }
+    </style>
+        <script src="{% static 'js/index.global.js' %}"></script>
+
+    </head>
+
+    <body
+        class="bg-black border-[2px] border-white drop-shadow-[0_0_6px_white] h-[calc(100vh-4px)] w-[calc(100vw-2px)] py-2 px-4 flex flex-col ">
+
+        <div class="w-full flex-1 overflow-scroll px-8">
+            <div id="intro">
+                <img src="{% static 'images/terminalHacker.svg' %}"
+                    class="w-[200px] h-[200px] p-0" />
+
+                <pre class="text-[8px] md:text-lg">
+       ____    _          ______      __              _____
+      / / /_  ( )_____   / ____/_  __/ /_  ___  _____/ ___/____  ____ _________ 
+ __  / / //_/  // ___/  / /   / / / / __ \/ _ \/ ___/\__ \/ __ \/ __ `/ ___/ _ \
+/ /_/ / ,<     (__  )  / /___/ /_/ / /_/ /  __/ /   ___/ / /_/ / /_/ / /__/  __/
+\____/_/|_|   /____/   \____/\__, /_.___/\___/_/   /____/ .___/\__,_/\___/\___/ 
+                            /____/                     /_/
+                </pre>
+
+                <!-- <p class=" bg-green-500 p-2 underline flex gap-2 items-center mb-6">
+                    <a href="/manual"
+                        class="!text-blue-900 underline cursor-pointer text-[15px]">Manual
+                        >> </a>
+                    <marquee class="flex-1 !text-black">jhasbhsf</marquee>
+                </p> -->
+                <br>
+            </div>
+            
+            <div id="terminal" class="text-lg mb-8">
+
+
+            </div>
+
+            <span id="scroll-anchor"></div>
+
+
+        </div>
+
+        <div id="screen-blocker"
+            class="fixed inset-0 bg-black opacity-0 z-[999] pointer-events-none"></div>
+    </body>
+
+    <script>
+
+    function scrollToBottom() {
+        const anchor = document.getElementById("scroll-anchor");
+        anchor.scrollIntoView({ behavior: "smooth" });
+    }
+
+    document.addEventListener("keydown", function (event) {
+        if ((event.ctrlKey || event.metaKey) && (event.key === "c" || event.key === "v")) {
+            event.preventDefault();  // Block the action
+            console.log("Copy & Paste Disabled!");
+        }
+    });
+
+
+
+    
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const terminal = document.getElementById("terminal");
+
+        function createInputLine() {
+            const newInputLine = document.createElement("div");
+            newInputLine.classList.add("input-line", "flex", "gap-4", "flex-wrap");
+            newInputLine.innerHTML = `
+                <span class="!text-violet-400">jk@hacker:~$</span>
+                <span id="command"
+                    class="flex-1 outline-none border-none bg-transparent focus:outline-none break-words min-w-0 "
+                    contenteditable="true" autofocus></span>
+            `;
+
+            terminal.appendChild(newInputLine);
+            document.getElementById("command").focus();
+        }
+
+        function typeText(element, text, speed = 50, callback) {
+            let index = 0;
+            function typeNextChar() {
+                if (index < text.length) {
+                    element.innerText += text[index];
+                    index++;
+                    setTimeout(typeNextChar, speed);
+                } else if(callback) {
+                    callback();
+                }
+            }
+            typeNextChar();
+
+        }
+
+        document.addEventListener("click", function (event) {
+            const commandElement = document.getElementById("command");
+            if (commandElement) {
+                commandElement.focus();
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(commandElement);
+                range.collapse(false); 
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); 
+
+                const commandElement = document.getElementById("command");
+                const commandText = commandElement.innerText.trim();
+                if (commandText === "") return;
+
+                commandElement.removeAttribute("id");
+                commandElement.removeAttribute("contenteditable");
+
+                const processingMessage = document.createElement("pre");
+                processingMessage.innerText = "Processing...";
+                terminal.appendChild(processingMessage);
+
+                setTimeout(async () => {
+                    // processingMessage.remove(); 
+
+                    const result = await executeCommand(commandText);
+
+                    const output = document.createElement("pre");
+                    output.classList.add("text-green-400", "whitespace-pre-wrap");
+                    terminal.appendChild(output);
+
+                    typeText(output, result, 30,  () => {
+                        createInputLine();  
+                        scrollToBottom();
+                    });
+                }, 100);
+            }
+        });
+
+        
+        function validate(parts) {
+
+            if(parts[0] === "clear" || parts[0] === "cls" || parts[0] === "manual" || parts[0] === "help") return true;
+
+            const mainCmd = parts[0];
+            const args = parts.slice(1);
+
+            const patterns = {
+                "getmyip": /^$/,
+                "genpw": /^\d+$/,
+                "genbarcode":  /^\d{12}$/,
+                "genqrcode": /^(\S+|\S*[^\s]\S*)$/,
+                "scanphone": /^\+\d{10,15}$/,
+                "scansubdomain": /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,  // Basic domain format
+                "gatherinfo": /^[^ "]+$/, // /^(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(:\d+)?(\/[\w\-./?%&=]*)?\/?$/, // /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/, // Basic URL validation
+                "scanports": /^(?:\d{1,3}\.){3}\d{1,3} (?:\d{1,5})(?:,\d{1,5})*$/, // Single or multiple ports separated by commas
+            };
+
+            if (patterns[mainCmd] !== undefined) {
+                const pattern = patterns[mainCmd];
+                if(pattern.test(args.join(" "))){
+                    return true;
+                } else {
+                    if(mainCmd == "genbarcode") {
+                        const errorMsg = document.createElement("p");
+                        errorMsg.textContent = "Error: The number must be exactly 12 digits.";
+                        terminal.appendChild(errorMsg);
+                        return false;
+                    }
+                }
+            }
+            
+
+            return false;
+        }
+
+        async function executeCommand(cmd) {
+
+            cmd = cmd.toLowerCase();
+            const parts = cmd.trim().split(/\s+/);
+
+            if(!validate(parts)) {
+                return "Invalid Command";
+            }
+
+            switch (parts[0]) {
+                case "clear":
+                case "cls":
+                    let el = document.getElementById("intro"); 
+                    if(el) el.remove();
+                    terminal.innerHTML = "";
+                    return "";
+                case "manual":
+                case "help":
+                    setTimeout(() => {
+                        window.open("/manual", "_blank");
+                    }, 1000);
+
+                    return "Refer the manual";
+                case "getmyip":
+                    const ip = await getMyIP();
+                    console.log(ip);
+                    return ip;  
+
+                case "genpw":
+                    return await genpw(parts[1]);
+
+                case "genbarcode":
+                   return await genbarcode(parts[1]);
+
+                case "genqrcode":
+                    return await genqrcode(parts[1]);
+
+                case "scanphone":
+                    return await scanphone(parts[1]);
+
+                case "gatherinfo":
+                    return await gatherinfo(parts[1]);
+
+                case "scansubdomain":
+                    return await scansubdomain(parts[1]);
+
+                case "scanports":
+                    return await scanports(parts[1], parts[2]);
+                
+                default:
+                    return `Command not found: ${cmd}`;
+            }
+        }
+
+        createInputLine();
+        scrollToBottom();
+    });
+
+
+    async function getMyIP() {
+
+        try {
+            const response = await fetch("/terminal/getMyIP");
+            if (!response.ok) {
+                throw new Error("Failed to fetch IP address");
+            }
+            const data = await response.json();
+            return `Your IP: ${data.ip}\nHostname: ${data.hostname}`;
+        } catch (error) {
+            return `Error: ${error.message}`;
+        }
+    }
+
+    async function genpw(num) {
+        const number = Number(num);
+        if(number < 1 || number > 99) {
+            return "Error: Length should be >= 1 and <= 99"
+        }
+
+        const lower = "abcdefghijklmnopqrstuvwxyz";
+        const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const numbers = "1234567890";
+        const symbols = "@#&*(){}[]/?";
+        const all = lower + upper + numbers + symbols;
+        let password = Array.from(all).sort(() => Math.random() - 0.5).slice(0, number).join("");
+
+        return password;
+    }
+
+
+    async function genbarcode(number) {
+        try {
+            const response = await fetch(`/terminal/genbarcode/?number=${number}`);
+            
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+
+            const output = document.createElement("pre");
+            output.classList.add("text-green-400", "whitespace-pre-wrap");
+            // add that inside this !!!
+
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.alt = "Generated Barcode";
+            img.classList.add("w-[300px]", "h-auto", "mt-2"); // Add styling if needed
+
+            // Append the image inside the <pre> element
+            output.appendChild(img);
+
+            terminal.appendChild(output);
+
+            return "Barcode  ↑"  ;
+
+            
+        } catch (error) {
+            console.error("Error:", error);
+            return ("Failed to generate barcode: " + error.message);
+        }
+    }
+
+
+    async function genqrcode(url) {
+        try {
+            const response = await fetch(`/terminal/genqrcode/?URL=${url}`);
+            
+            if (!response.ok) {
+                // throw new Error(await response.text());
+                window.location.href = '/error';
+                return "Error";
+                // return;
+            }
+
+            const blob = await response.blob();
+            const imageUrl = URL.createObjectURL(blob);
+
+            const output = document.createElement("pre");
+            output.classList.add("text-green-400", "whitespace-pre-wrap");
+            // add that inside this !!!
+
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.alt = "Generated QR Code";
+            img.classList.add("w-[300px]", "h-auto", "mt-2"); // Add styling if needed
+
+            // Append the image inside the <pre> element
+            output.appendChild(img);
+
+            terminal.appendChild(output);
+
+            return "QRCODE  ↑"  ;
+
+            
+        } catch (error) {
+            console.error("Error:", error);
+            return ("Failed to generate QR Code: " + error.message);
+        }
+    }
+
+
+
+
+    async function scanphone(phone) {
+        phone = phone.replace("+", "%2B");
+
+        try {
+            const response = await fetch(`/terminal/scanphone/?phone=${phone}`);
+            const data = await response.json();
+            return `Information\n-------------\nPhone: ${data.phone}\nCountry: ${data.country}\nStatus: ${data.status}\nSUpplier: ${data.supplier}`;
+        } catch(error) {
+            return "Phone number should start with '+' and contain 10 - 15 digits ";
+        }
+    }
+
+    async function gatherinfo(url) {
+        try {
+            const response = await fetch("/informationGathering/gather/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // "X-CSRFToken": getCSRFToken() // Uncomment if CSRF token is needed
+                },
+                body: JSON.stringify({ url: url })
+            });
+
+            const data = await response.json();
+            return String(data.result); // Convert result to string
+
+        } catch (error) {
+            return `Error: ${error}`;
+        }
+    }
+
+    async function scansubdomain(domain) {
+        try {
+            const response = await fetch("/subdomainScanner/scan/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ url: domain }) // Send domain in request
+            });
+
+            const data = await response.json(); // Parse JSON response
+            console.log(data.found);
+            if (Array.isArray(data.found) && data.found.length > 0) {
+                return data.found.join("\n") + "\n"; // Join subdomains with newline
+            } else {
+                return "No subdomains found.\n";
+            }
+
+
+        } catch (error) {
+            return `Error: ${error}`;
+        }
+    }
+
+
+    async function scanports(IP, ports) {
+        try {
+            const response = await fetch("/portScanner/scan/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ host: IP, ports: ports })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                return data.result + "\n";  // Ensures a newline at the end
+            } else {
+                return `Error: ${data.error}\n`;
+            }
+        } catch (error) {
+            return `Error: ${error.message}\n`;
+        }
+    }
+
+
+
+    
+    
+
+
+
+
+</script>
+
+</html>
+
+
+
+<!-- <div class="input-line flex gap-4 flex-wrap">
+    <span class="!text-violet-400">jk@hacker:~$</span>
+    <span id="command"
+        class="flex-1 outline-none border-none bg-transparent focus:outline-none break-words min-w-0"
+        contenteditable="true" autofocus></span>
+
+</div> -->
