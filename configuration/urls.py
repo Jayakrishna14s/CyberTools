@@ -25,10 +25,10 @@ from django.views.static import serve
 from django.urls import re_path
 
 
-# from configuration import settings
+from configuration import settings
 
-# def custom_404_view(request, exception):
-#     return render(request, "error.html", status=404)
+def custom_404_view(request, exception):
+    return render(request, "error.html", status=404)
 
 
 urlpatterns = [
@@ -44,6 +44,8 @@ urlpatterns = [
     path('terminal/', include('routes.terminal.urls')),
     path('manual/', include('routes.manual.urls')),    
 ]
+
+handler404 = 'configuration.urls.custom_404_view'
 
 # if settings.DEBUG:
 #     urlpatterns += [
